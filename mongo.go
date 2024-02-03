@@ -112,6 +112,7 @@ func updateRefreshToken(guid string, token string) {
 		log.Println("Update error")
 	}
 }
+
 func isValidateRefreshToken(guid string, refreshToken string) bool {
 	createConncetion()
 	defer func() {

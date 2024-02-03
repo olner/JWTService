@@ -50,7 +50,7 @@ func createRefreshToken(guid string) (string, error) {
 	expirationTimeRefreshToken := time.Now().Add(60 * time.Minute).Unix()
 
 	rtClaims := refreshToken.Claims.(jwt.MapClaims)
-	rtClaims["sub"] = guid
+	rtClaims["guid"] = guid
 	rtClaims["exp"] = expirationTimeRefreshToken
 
 	if err := godotenv.Load("jwtService.env"); err != nil {
