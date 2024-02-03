@@ -5,35 +5,12 @@ import (
 	"net/http"
 )
 
-func createTokens(guid string) (string, string) {
-	accessToken, err := createAccessToken(guid)
-	if err != nil {
-		panic(err)
-	}
-
-	refreshToken, err := createRefreshToken(guid)
-	if err != nil {
-		panic(err)
-	}
-
-	saveRefreshToken(guid, refreshToken)
-
-	return accessToken, refreshToken
-}
 func createTokensHttp(w http.ResponseWriter, r *http.Request) {
 	guid := r.URL.Query().Get("guid")
-	accessToken, err := createAccessToken(guid)
-	if err != nil {
-		panic(err)
-	}
-	refreshToken, err := createRefreshToken(guid)
-	if err != nil {
-		panic(err)
-	}
+	accessToken, refreshToken := createTokens(guid)
 	saveRefreshToken(guid, refreshToken)
 	jsonAccessAndRefreshTokens, _ := json.Marshal(map[string]string{"accessToken": accessToken, "refreshToken": refreshToken})
 	w.Write(jsonAccessAndRefreshTokens)
-
 }
 
 func refreshTokensHttp(w http.ResponseWriter, r *http.Request) {
@@ -46,5 +23,4 @@ func refreshTokensHttp(w http.ResponseWriter, r *http.Request) {
 		jsonAccessAndRefreshTokens, _ := json.Marshal(map[string]string{"accessToken": newAccessToken, "refreshToken": newAccessToken})
 		w.Write((jsonAccessAndRefreshTokens))
 	}
-
 }
