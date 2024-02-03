@@ -9,10 +9,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var RefreshJwtKey = []byte("secret_key2")
-
 func createAccessToken(guid string) (string, error) {
-	expirationTimeAccessToken := time.Now().Add(60 * time.Minute).Unix()
+	expirationTimeAccessToken := time.Now().Add(15 * time.Minute).Unix()
 
 	token := jwt.New(jwt.SigningMethodHS512)
 
@@ -23,7 +21,7 @@ func createAccessToken(guid string) (string, error) {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found")
 	}
-	key := []byte(os.Getenv("SECRET_KEY"))
+	key := []byte(os.Getenv("SECRET_ACCESS_KEY"))
 	tokenString, err := token.SignedString(key)
 	if err != nil {
 		return "", err
@@ -35,13 +33,17 @@ func createAccessToken(guid string) (string, error) {
 func createRefreshToken(guid string) (string, error) {
 	refreshToken := jwt.New(jwt.SigningMethodHS512)
 
-	//expirationTimeRefreshToken := time.Now().Add(15 * time.Minute).Unix()
+	expirationTimeRefreshToken := time.Now().Add(60 * time.Minute).Unix()
 
 	rtClaims := refreshToken.Claims.(jwt.MapClaims)
 	rtClaims["sub"] = guid
-	//rtClaims["exp"] = expirationTimeRefreshToken
+	rtClaims["exp"] = expirationTimeRefreshToken
 
-	refreshTokenString, err := refreshToken.SignedString(RefreshJwtKey)
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found")
+	}
+	key := []byte(os.Getenv("SECRET_REFRESH_KEY"))
+	refreshTokenString, err := refreshToken.SignedString(key)
 	if err != nil {
 		return "", err
 	}

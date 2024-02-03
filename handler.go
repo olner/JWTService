@@ -36,16 +36,6 @@ func createTokensHttp(w http.ResponseWriter, r *http.Request) {
 
 }
 
-/*
-	func refreshTokens(guid string, refreshToken string) (string, string) {
-		if isValidateRefreshToken(guid, refreshToken) {
-			newAccesToken, newRefreshToken := createTokens(guid)
-			updateRefreshToken(guid, newRefreshToken)
-			return newAccesToken, newRefreshToken
-		}
-		return "", ""
-	}
-*/
 func refreshTokensHttp(w http.ResponseWriter, r *http.Request) {
 	oldRefreshToken := r.URL.Query().Get("refreshToken")
 	guid := r.URL.Query().Get("guid")
