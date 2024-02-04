@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"log"
@@ -9,13 +9,13 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func createTokens(guid string) (string, string) {
-	accessToken, err := createAccessToken(guid)
+func CreateTokens(guid string) (string, string) {
+	accessToken, err := CreateAccessToken(guid)
 	if err != nil {
 		panic(err)
 	}
 
-	refreshToken, err := createRefreshToken(guid)
+	refreshToken, err := CreateRefreshToken(guid)
 	if err != nil {
 		panic(err)
 	}
@@ -23,7 +23,7 @@ func createTokens(guid string) (string, string) {
 	return accessToken, refreshToken
 }
 
-func createAccessToken(guid string) (string, error) {
+func CreateAccessToken(guid string) (string, error) {
 	expirationTimeAccessToken := time.Now().Add(15 * time.Minute).Unix()
 
 	token := jwt.New(jwt.SigningMethodHS512)
@@ -44,7 +44,7 @@ func createAccessToken(guid string) (string, error) {
 	return tokenString, nil
 }
 
-func createRefreshToken(guid string) (string, error) {
+func CreateRefreshToken(guid string) (string, error) {
 	refreshToken := jwt.New(jwt.SigningMethodHS512)
 
 	expirationTimeRefreshToken := time.Now().Add(60 * time.Minute).Unix()
@@ -61,5 +61,6 @@ func createRefreshToken(guid string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return refreshTokenString, nil
 }

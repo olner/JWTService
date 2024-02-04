@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"context"
@@ -10,11 +10,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
+
+	service "jwtService/internal/services"
 )
 
 var connection *mongo.Client
 
-func createConncetion() {
+func CreateConncetion() {
 	if err := godotenv.Load("jwtService.env"); err != nil {
 		log.Println("No .env file found")
 	}
@@ -32,14 +34,14 @@ func createConncetion() {
 	log.Println("Connection open")
 }
 
-func closeConnection() {
+func CloseConnection() {
 	if err := connection.Disconnect(context.TODO()); err != nil {
 		panic(err)
 	}
 	log.Println("Connection closed")
 }
 
-func isCollectionExists() bool {
+func IsCollectionExists() bool {
 	cNames, err := connection.Database("test").ListCollectionNames(context.TODO(), bson.D{})
 	if err != nil {
 		log.Fatal(err.Error())
@@ -53,7 +55,7 @@ func isCollectionExists() bool {
 	return false
 }
 
-func createCollection() {
+func CreateCollection() {
 	db := connection.Database("test")
 	err := db.CreateCollection(context.TODO(), "tokens")
 	if err != nil {
@@ -61,14 +63,14 @@ func createCollection() {
 	}
 }
 
-func saveRefreshToken(guid string, token string) {
-	createConncetion()
+func SaveRefreshToken(guid string, token string) {
+	CreateConncetion()
 	defer func() {
-		closeConnection()
+		CloseConnection()
 	}()
 
-	if !isCollectionExists() {
-		createCollection()
+	if !IsCollectionExists() {
+		CreateCollection()
 	}
 
 	coll := connection.Database("test").Collection("tokens")
@@ -91,13 +93,13 @@ func saveRefreshToken(guid string, token string) {
 	}
 }
 
-func updateRefreshToken(guid string, token string) {
-	createConncetion()
+func UpdateRefreshToken(guid string, token string) {
+	CreateConncetion()
 	defer func() {
-		closeConnection()
+		CloseConnection()
 	}()
 
-	newRefreshToken, err := createRefreshToken(guid)
+	newRefreshToken, err := service.CreateRefreshToken(guid)
 	if err != nil {
 		panic(err)
 	}
@@ -113,10 +115,10 @@ func updateRefreshToken(guid string, token string) {
 	}
 }
 
-func isValidateRefreshToken(guid string, refreshToken string) bool {
-	createConncetion()
+func IsValidateRefreshToken(guid string, refreshToken string) bool {
+	CreateConncetion()
 	defer func() {
-		closeConnection()
+		CloseConnection()
 	}()
 
 	coll := connection.Database("test").Collection("tokens")
